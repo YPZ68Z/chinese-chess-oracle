@@ -82,13 +82,13 @@
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             transition: transform 0.1s;
-            width: 80%;
+            width: 100%;
             max-width: 300px;
         }
         .btn:active { transform: scale(0.95); }
 
         input[type="text"] {
-            width: 80%;
+            width: 100%;
             padding: 12px;
             border: 2px solid var(--primary-red);
             border-radius: 10px;
@@ -128,7 +128,7 @@
         .result-piece {
             width: 70px;
             height: 70px;
-            font-size: 2.2rem;
+            font-size: 1.2rem;
             margin: 0 10px;
         }
         .result-piece::before { width: 58px; height: 58px; }
@@ -136,12 +136,13 @@
         /* 選號盤與驗證盤 */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
             gap: 8px;
             margin-top: 10px;
             width: 100%;
             justify-items: center;
         }
+
         .number-btn {
             width: 45px;
             height: 45px;
@@ -151,7 +152,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
             border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -165,7 +166,7 @@
             border-color: #333;
             z-index: 2;
         }
-        
+
         /* 驗證模式下的樣式 */
         .verify-piece {
             opacity: 0.4; /* 未選中的變淡 */
@@ -184,7 +185,7 @@
             border-radius: 15px;
             padding: 15px;
             margin-top: 10px;
-            width: 90%;
+            width: 100%;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             text-align: left;
         }
@@ -199,13 +200,13 @@
             margin-left: 15px;
             flex: 1;
         }
-        .meaning-label { font-size: 0.85rem; color: #888; display: block; }
-        .meaning-main { font-size: 1.1rem; font-weight: bold; color: #333; }
+        .meaning-label { font-size: clamp(0.7rem, 2.5vw, 0.85rem); color: #888; display: block; }
+        .meaning-main { font-size: clamp(1.0rem, 3vw, 1.2rem); font-weight: bold; color: #333; }
         .score-badge {
             background: #eee;
             padding: 2px 8px;
             border-radius: 10px;
-            font-size: 0.8rem;
+            font-size: clamp(0.6rem, 2vw, 0.9rem);
             color: #666;
             margin-left: auto;
         }
@@ -216,7 +217,7 @@
             padding: 2px; /* 邊框效果 */
             border-radius: 15px;
             margin-top: 20px;
-            width: 90%;
+            width: 100%;
         }
         .analysis-inner {
             background: white;
@@ -224,7 +225,7 @@
             border-radius: 13px;
         }
         .total-score {
-            font-size: 1.5rem;
+            font-size: clamp(1.0rem, 4.5vw, 1.5rem);
             color: var(--primary-red);
             font-weight: bold;
             text-align: center;
@@ -235,16 +236,28 @@
 
         .mode-card {
             background: white;
-            width: 80%;
-            padding: 15px;
+            width: 90%;
+            padding: clamp(10px ,1.5vw, 30px);
             margin: 10px 0;
-            border-radius: 15px;
+            border-radius: clamp(15px,2.5vw,19px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             cursor: pointer;
             border: 2px solid transparent;
         }
         .mode-card:hover { border-color: var(--primary-gold); }
 
+
+        @media (max-width: 768px) {
+            body { height: unset; overflow: auto; }
+            #app-container { max-width: 100%; padding: 10px; }
+            header { font-size: 1.2rem; padding: 10px; }
+            .btn { width: 90%; font-size: 1rem; }
+            .content { padding: 10px; }
+        }
+
+        @media (min-width: 1024px) {
+           .chess-piece { font-size: 90%;}  
+          }
     </style>
 </head>
 <body>
@@ -551,4 +564,3 @@
 </body>
 
 </html>
-
