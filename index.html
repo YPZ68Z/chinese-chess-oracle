@@ -2,102 +2,249 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>中華象棋神卦 v1.0.0</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="象棋神卦">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中華象棋神卦 App V1.0</title>
     <style>
-        /* --- App 整體紅金風格 --- */
+        /* --- 1. App 整體風格設定 (UI/UX) --- */
         :root {
-            --primary-red: #b71c1c; 
-            --bright-red: #d32f2f;
-            --primary-gold: #FFD700; 
-            --deep-gold: #DAA520;
-            --text-dark: #3e2723;
+            --primary-red: #D32F2F;
+            --primary-gold: #FFC107;
+            --bg-color: #FFF8E1;
+            --text-color: #333;
         }
 
         body {
-            font-family: "PingFang TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
-            background: linear-gradient(135deg, #8e0e00 0%, #1f1c18 100%);
-            margin: 0; padding: 0;
-            display: flex; justify-content: center;
-            height: 100vh; overflow: hidden;
-            color: var(--text-dark);
-            -webkit-tap-highlight-color: transparent;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
         #app-container {
-            width: 100%; max-width: 480px;
-            background: linear-gradient(165deg, #FFF9C4 0%, #FFD54F 40%, #FF8F00 100%);
-            display: flex; flex-direction: column;
+            width: 100%;
+            max-width: 480px;
+            background-image: radial-gradient(circle at top right, #ffecd2 0%, #fcb69f 100%);
+            display: flex;
+            flex-direction: column;
             position: relative;
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
         header {
-            background: linear-gradient(to bottom, #d32f2f, #8e0e00);
-            color: var(--primary-gold);
-            padding: 15px; text-align: center;
-            font-size: 1.6rem; font-weight: bold;
-            border-bottom: 3px solid var(--primary-gold);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background-color: var(--primary-red);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 10;
         }
 
-        .content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .page { display: none; width: 100%; animation: fadeIn 0.6s ease-out; }
-        .page.active { display: flex; flex-direction: column; align-items: center; }
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* justify-content: center; 改為預設，避免長內容被卡住 */
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .page {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.5s;
+        }
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .btn {
-            background: linear-gradient(180deg, #d32f2f 0%, #8e0e00 100%);
-            color: var(--primary-gold);
-            border: 2px solid var(--primary-gold);
-            padding: 12px 40px; border-radius: 50px;
-            font-size: 1.2rem; font-weight: bold;
-            margin-top: 25px; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            width: 80%;
+            max-width: 300px;
+        }
+        .btn:active { transform: scale(0.95); }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid var(--primary-red);
+            border-radius: 10px;
+            font-size: 1rem;
+            margin: 10px 0;
+            text-align: center;
         }
 
-        /* 棋子樣式 */
+        /* --- 棋子樣式 --- */
         .chess-piece {
-            width: 54px; height: 54px; border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #ffffff, #e6cba5, #b8860b);
-            border: 2px solid #5d4037;
-            box-shadow: 3px 5px 8px rgba(0,0,0,0.4), inset 0 0 5px rgba(255,255,255,0.8);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.85rem; font-family: "KaiTi", "BiauKai", serif; font-weight: 900;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #f0dbb5;
+            border: 3px solid #8d6e63;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2), 1px 1px 3px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-family: "KaiTi", "BiauKai", serif;
+            font-weight: bold;
+            position: relative;
         }
-        .red-piece { color: #d50000; text-shadow: 1px 1px 0px #fff; }
-        .black-piece { color: #111; text-shadow: 1px 1px 0px #aaa; }
+        .chess-piece::before {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px dashed #8d6e63;
+        }
+        .red-piece { color: #d32f2f; }
+        .black-piece { color: #212121; }
 
-        .result-box {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px; padding: 12px;
-            margin-top: 10px; width: 92%;
-            border-left: 6px solid var(--primary-red);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        /* 結果頁的大棋子 */
+        .result-piece {
+            width: 70px;
+            height: 70px;
+            font-size: 2.2rem;
+            margin: 0 10px;
         }
+        .result-piece::before { width: 58px; height: 58px; }
 
-        .analysis-card {
-            background: linear-gradient(135deg, #8e0e00, #d32f2f);
-            padding: 4px; border-radius: 16px; margin-top: 20px; width: 95%;
+        /* 選號盤與驗證盤 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            width: 100%;
+            justify-items: center;
         }
-        .analysis-inner { background: #fff; padding: 18px; border-radius: 13px; line-height: 1.7; }
-        
-        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px; }
         .number-btn {
-            width: 50px; height: 50px; background: var(--primary-red); color: #fff;
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-weight: bold; border: 2.5px solid var(--primary-gold); cursor: pointer;
+            width: 45px;
+            height: 45px;
+            background-color: var(--primary-red);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s;
         }
-        .number-btn.selected { background: var(--primary-gold); color: var(--primary-red); transform: scale(1.1); }
+        .number-btn.selected {
+            background-color: var(--primary-gold);
+            color: #333;
+            font-weight: bold;
+            transform: scale(1.1);
+            border-color: #333;
+            z-index: 2;
+        }
+        
+        /* 驗證模式下的樣式 */
+        .verify-piece {
+            opacity: 0.4; /* 未選中的變淡 */
+            transform: scale(0.9);
+        }
+        .verify-piece.is-chosen {
+            opacity: 1;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--primary-gold);
+            z-index: 5;
+        }
+
+        /* 結果展示區 */
+        .result-box {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 10px;
+            width: 90%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .result-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .result-row:last-child { border-bottom: none; }
+        .result-text-group {
+            margin-left: 15px;
+            flex: 1;
+        }
+        .meaning-label { font-size: 0.85rem; color: #888; display: block; }
+        .meaning-main { font-size: 1.1rem; font-weight: bold; color: #333; }
+        .score-badge {
+            background: #eee;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            margin-left: auto;
+        }
+
+        /* 綜合分析區 */
+        .analysis-card {
+            background: linear-gradient(to right, #fffbd5, #b20a2c); /* 金到紅漸層 */
+            padding: 2px; /* 邊框效果 */
+            border-radius: 15px;
+            margin-top: 20px;
+            width: 90%;
+        }
+        .analysis-inner {
+            background: white;
+            padding: 15px;
+            border-radius: 13px;
+        }
+        .total-score {
+            font-size: 1.5rem;
+            color: var(--primary-red);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 2px dashed #eee;
+            padding-bottom: 10px;
+        }
+
+        .mode-card {
+            background: white;
+            width: 80%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .mode-card:hover { border-color: var(--primary-gold); }
+
     </style>
 </head>
 <body>
@@ -369,16 +516,12 @@
         } else if (score >= 5) {
             luckLevel = "【吉】運勢平穩，穩步向前。";
             advice = "雖然不是一飛沖天，但只要按部就班，結果多為正向。";
-        { else if (score >= -5) {
+        } else if (score >= -5) {
             luckLevel = "【平】吉凶參半，變數仍多。";
-            advice = "局勢尚未明朗或有好有壞，建議保守行事，多觀察再行動。";        
-             
-        } else if (score >= -22) {
-            luckLevel = "【凶】阻礙重重，不宜躁進";
-            advice = "目前的時機點較差，容易遇到阻礙或小人，建議修身養性自我提升，以扭轉乾坤。";
+            advice = "局勢尚未明朗或有好有壞，建議保守行事，多觀察再行動。";
         } else {
-            luckLevel = "【大凶】事與願違，徒勞無功。";
-            advice = "大環境及個人條件均有極大劣勢，請停下腳步，韜光養晦，靜待否極泰來的一刻。";
+            luckLevel = "【凶】阻礙重重，不宜躁進。";
+            advice = "目前的時機點較差，容易遇到阻礙或小人，建議暫緩計畫，修身養性。";
         }
 
         // 2. 組合句子
@@ -403,5 +546,4 @@
 </script>
 
 </body>
-
 </html>
