@@ -595,10 +595,10 @@
             const posKeys = ["self", "spouse", "sibling", "elder", "child"];
             
             let level = "";
-            if(total >= 15) level = "【大吉】";
-            else if(total > 5) level = "【吉】";
-            else if(total >= -5) level = "【平】";
-            else if(total >= -15) level = "【凶】";
+            if(total >= 12) level = "【大吉】";
+            else if(total > 4) level = "【吉】";
+            else if(total >= -4) level = "【平】";
+            else if(total >= -12) level = "【凶】";
             else level = "【大凶】";
             
             html += `<span class="section-title">【五行全盤剖析】</span>`;
@@ -614,7 +614,7 @@
             if(level === "【大吉】") html += "黃帝內經：「陽氣升騰，萬物生長。」氣勢如虹，可大舉進攻。";
             else if(level === "【大凶】") html += "孫子兵法：「兵者，國之大事，死生之地。」局勢極險，切勿輕舉妄動。";
             else html += "孫子兵法：「兵無常勢，水無常形。」局勢多變，需隨機應變。";           
-            html += `總評 "level"。經云：「陰平陽秘，精神乃治。」五行相生相剋，需注意平衡。`;
+            html += `總評：` level `。經云：「陰平陽秘，精神乃治。」五行相生相剋，需注意平衡。`;
             html += `</div>`;
         }
 
@@ -631,5 +631,6 @@
 </body>
 
 </html>
+
 
 
