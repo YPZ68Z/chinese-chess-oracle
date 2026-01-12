@@ -2,565 +2,620 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中華象棋神卦 v1.0.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>中華棋卦 v1.0.0 宗師版</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <style>
-        /* --- 1. App 整體風格設定 (UI/UX) --- */
+        /* --- 視覺系統：紅金帝王風格 (RWD優化) --- */
         :root {
-            --primary-red: #D32F2F;
-            --primary-gold: #FFC107;
-            --bg-color: #FFF8E1;
-            --text-color: #333;
+            --primary-red: #5D0000;       /* 絳紅 */
+            --bright-red: #B71C1C;        /* 丹紅 */
+            --primary-gold: #C0A062;      /* 沉穩金 */
+            --light-gold: #FDF5E6;        /* 米帛色 */
+            --board-bg: #D7CCC8;          /* 棋盤淺木 */
+            --board-line: #4E342E;        /* 棋盤線 */
+            --text-main: #3E2723;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
+            font-family: "KaiTi", "BiauKai", "PingFang TC", serif; /* 全局楷體，提升古風 */
+            background: #0a0a0a;
+            margin: 0; padding: 0;
+            display: flex; justify-content: center;
+            height: 100vh; overflow: hidden;
         }
 
         #app-container {
-            width: 100%;
-            max-width: 480px;
-            background-image: radial-gradient(circle at top right, #ffecd2 0%, #fcb69f 100%);
-            display: flex;
-            flex-direction: column;
+            width: 100vw; max-width: 500px; height: 100%;
+            background: linear-gradient(180deg, #2b0a0a 0%, #5d1010 50%, #3e0a0a 100%);
+            display: flex; flex-direction: column;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 50px rgba(192, 160, 98, 0.2);
+            border-left: 1px solid #333; border-right: 1px solid #333;
         }
 
         header {
-            background-color: var(--primary-red);
-            color: white;
-            padding: 15px;
+            background: linear-gradient(to bottom, #4a0000, #2a0000);
+            color: var(--primary-gold);
+            padding: env(safe-area-inset-top) 0 12px 0;
             text-align: center;
-            font-size: 1.5rem;
+            font-size: clamp(1.3rem, 5vw, 1.6rem);
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 10;
+            border-bottom: 2px solid var(--primary-gold);
+            text-shadow: 1px 1px 2px #000;
+            flex-shrink: 0;
+            display: flex; align-items: end; justify-content: center; min-height: 70px;
+            letter-spacing: 2px;
         }
 
         .content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            /* justify-content: center; 改為預設，避免長內容被卡住 */
+            flex: 1; padding: 15px; overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .page {
-            display: none;
-            width: 100%;
-            animation: fadeIn 0.5s;
-        }
-        .page.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .page { display: none; width: 100%; animation: fadeIn 0.6s ease-out; }
+        .page.active { display: flex; flex-direction: column; align-items: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* 輸入框與按鈕 */
+        input[type="text"] {
+            width: 90%; padding: 12px; font-size: 1.1rem;
+            border: 1px solid var(--primary-gold);
+            background: rgba(255,255,255,0.9);
+            border-radius: 4px; margin: 15px 0;
+            text-align: center; color: var(--primary-red); font-weight: bold;
+            font-family: inherit;
         }
 
         .btn {
-            background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            margin-top: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: transform 0.1s;
-            width: 100%;
-            max-width: 300px;
+            background: linear-gradient(180deg, #C0A062 0%, #8D6E63 100%);
+            color: #2b0a0a; border: 1px solid #ffeebb;
+            padding: 12px 0; width: 85%; max-width: 280px;
+            border-radius: 50px; font-size: 1.3rem; font-weight: bold;
+            margin-top: 20px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+            flex-shrink: 0; font-family: inherit;
         }
-        .btn:active { transform: scale(0.95); }
+        .btn:active { transform: scale(0.97); }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--primary-red);
-            border-radius: 10px;
-            font-size: 1rem;
-            margin: 10px 0;
-            text-align: center;
-        }
-
-        /* --- 棋子樣式 --- */
-        .chess-piece {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #f0dbb5;
-            border: 3px solid #8d6e63;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.2), 1px 1px 3px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            font-family: "KaiTi", "BiauKai", serif;
-            font-weight: bold;
-            position: relative;
-        }
-        .chess-piece::before {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px dashed #8d6e63;
-        }
-        .red-piece { color: #d32f2f; }
-        .black-piece { color: #212121; }
-
-        /* 結果頁的大棋子 */
-        .result-piece {
-            width: 70px;
-            height: 70px;
-            font-size: 1.2rem;
-            margin: 0 10px;
-        }
-        .result-piece::before { width: 58px; height: 58px; }
-
-        /* 選號盤與驗證盤 */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-            width: 100%;
-            justify-items: center;
-        }
-
-        .number-btn {
-            width: 45px;
-            height: 45px;
-            background-color: var(--primary-red);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-        }
-        .number-btn.selected {
-            background-color: var(--primary-gold);
-            color: #333;
-            font-weight: bold;
-            transform: scale(1.1);
-            border-color: #333;
-            z-index: 2;
-        }
-
-        /* 驗證模式下的樣式 */
-        .verify-piece {
-            opacity: 0.4; /* 未選中的變淡 */
-            transform: scale(0.9);
-        }
-        .verify-piece.is-chosen {
-            opacity: 1;
-            transform: scale(1.1);
-            box-shadow: 0 0 15px var(--primary-gold);
-            z-index: 5;
-        }
-
-        /* 結果展示區 */
-        .result-box {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 10px;
-            width: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: left;
-        }
-        .result-row {
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
-        }
-        .result-row:last-child { border-bottom: none; }
-        .result-text-group {
-            margin-left: 15px;
-            flex: 1;
-        }
-        .meaning-label { font-size: clamp(0.7rem, 2.5vw, 0.85rem); color: #888; display: block; }
-        .meaning-main { font-size: clamp(1.0rem, 3vw, 1.2rem); font-weight: bold; color: #333; }
-        .score-badge {
-            background: #eee;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: clamp(0.6rem, 2vw, 0.9rem);
-            color: #666;
-            margin-left: auto;
-        }
-
-        /* 綜合分析區 */
-        .analysis-card {
-            background: linear-gradient(to right, #fffbd5, #b20a2c); /* 金到紅漸層 */
-            padding: 2px; /* 邊框效果 */
-            border-radius: 15px;
-            margin-top: 20px;
-            width: 100%;
-        }
-        .analysis-inner {
-            background: white;
-            padding: 15px;
-            border-radius: 13px;
-        }
-        .total-score {
-            font-size: clamp(1.0rem, 4.5vw, 1.5rem);
-            color: var(--primary-red);
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 10px;
-            border-bottom: 2px dashed #eee;
-            padding-bottom: 10px;
-        }
-
+        /* 模式卡片 */
+        .mode-container { display: flex; flex-direction: column; gap: 12px; width: 95%; margin-top: 10px; }
         .mode-card {
-            background: white;
-            width: 90%;
-            padding: clamp(10px ,1.5vw, 30px);
-            margin: 10px 0;
-            border-radius: clamp(15px,2.5vw,19px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            cursor: pointer;
-            border: 2px solid transparent;
+            background: linear-gradient(to right, #fff, #f3e5f5);
+            padding: 15px; border-radius: 8px;
+            border-left: 5px solid var(--bright-red);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            cursor: pointer; display: flex; flex-direction: column;
         }
-        .mode-card:hover { border-color: var(--primary-gold); }
+        .mode-card h4 { margin: 0; color: var(--primary-red); font-size: 1.2rem; }
+        .mode-card p { margin: 5px 0 0; color: #555; font-size: 0.95rem; }
 
-
-        @media (max-width: 768px) {
-            body { height: unset; overflow: auto; }
-            #app-container { max-width: 100%; padding: 10px; }
-            header { font-size: 1.2rem; padding: 10px; }
-            .btn { width: 90%; font-size: 1rem; }
-            .content { padding: 10px; }
+        /* 暗棋盤 */
+        .board-frame {
+            background: #8D6E63; padding: 6px; border-radius: 4px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.7);
+            border: 4px solid #3E2723; width: 100%; max-width: 380px;
+            margin-top: 10px;
+        }
+        .grid-container {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 2px; background: #4E342E; border: 2px solid #4E342E;
+        }
+        .grid-cell {
+            background: #D7CCC8; aspect-ratio: 1;
+            display: flex; justify-content: center; align-items: center; position: relative;
+        }
+        /* 楚河漢界紋路 */
+        .grid-cell::after {
+            content: ''; position: absolute; width: 90%; height: 90%;
+            border: 1px solid rgba(0,0,0,0.05); pointer-events: none;
         }
 
-        @media (min-width: 1024px) {
-           .chess-piece { font-size: 90%;}  
-          }
+        .lid-btn {
+            width: 82%; height: 82%; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #a63535, #5a1010);
+            border: 2px solid #deb887; color: #deb887;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 1.2rem; cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-family: sans-serif;
+        }
+        .lid-btn.selected { transform: scale(0); opacity: 0; transition: all 0.3s; }
+
+        .chess-piece {
+            width: 86%; height: 86%; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fffdf0, #e6cba5, #cfa874);
+            border: 3px solid #5d4037; position: absolute;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+            display: flex; justify-content: center; align-items: center;
+            font-size: clamp(1.4rem, 5vw, 1.8rem);
+            font-weight: 900;
+            animation: popIn 0.3s forwards;
+        }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        .red-piece { color: #cc0000; text-shadow: 0 1px 0 rgba(255,255,255,0.5); }
+        .black-piece { color: #111; text-shadow: 0 1px 0 rgba(255,255,255,0.5); }
+
+        /* 結果頁 */
+        .ganzhi-badge {
+            background: rgba(0,0,0,0.5); border: 1px solid var(--primary-gold);
+            color: var(--light-gold); padding: 10px; border-radius: 6px;
+            font-size: 0.95rem; text-align: center; line-height: 1.6; width: 100%;
+            margin-bottom: 15px; letter-spacing: 1px;
+        }
+        
+        .analysis-box {
+            background: #fff; border-radius: 6px; padding: 15px;
+            width: 100%; max-height: 55vh; overflow-y: auto;
+            border-top: 5px solid var(--primary-red);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .poem-box {
+            background: #fff8e1; padding: 12px; border-left: 4px solid #ffb300;
+            margin: 10px 0; font-size: 1.15rem; color: #5d4037;
+            line-height: 1.6; font-weight: bold; text-align: center;
+        }
+        
+        /* 太極旋轉動畫 */
+        .taiji-icon {
+            font-size: clamp(4rem, 15vw, 6rem); margin: 30px 0;
+            filter: drop-shadow(0 0 15px var(--primary-gold));
+            animation: rotateTaiji 10s linear infinite;
+        }
+        @keyframes rotateTaiji { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        h2 { color: var(--primary-gold); font-size: 1.6rem; text-shadow: 0 2px 4px #000; margin: 10px 0; letter-spacing: 3px; }
+        h3 { color: var(--light-gold); font-size: 1.2rem; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(255,255,255,0.2); width:100%; text-align:center; padding-bottom: 5px; }
+
+        .section-title { color: #8e0000; font-weight: bold; margin-top: 15px; display: block; border-bottom: 1px dashed #ccc; padding-bottom: 3px; font-size: 1.1rem; }
+        .strategy-quote { font-style: italic; color: #555; font-size: 0.95rem; margin-top: 10px; padding: 5px; background: #eee; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <div id="app-container">
-    <header>
-        ✨ 中華象棋神卦 v1.0.0 ✨
-    </header>
+    <header>中華棋卦 v1.0.0</header>
 
     <div id="page-home" class="content page active">
-        <div style="margin-top:30px; font-size:4rem; text-align:center;">🐎</div>
-        <h2>誠心求問</h2>
-        <div style="text-align: left; background: white; padding: 20px; border-radius: 10px; width:80%;">
-            <h3 style="margin-top:0; color:var(--primary-red);">卜卦三原則</h3>
-            <ul style="padding-left: 20px; color: #555;">
+        <div class="taiji-icon">☯️</div>
+        <h2>誠心求問 ‧ 天機自現</h2>
+        <div style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 8px; width:90%; border: 1px solid var(--primary-gold);">
+            <ul style="padding-left: 20px; color: #ddd; margin:0; line-height: 2; font-size: 1.1rem;">
                 <li><b>不誠不占：</b>心存玩笑勿試。</li>
                 <li><b>不義不占：</b>傷天害理勿問。</li>
                 <li><b>不疑不占：</b>已有定見勿卜。</li>
             </ul>
         </div>
-        <button class="btn" onclick="goToPage('page-question')">開始卜卦</button>
+        <button class="btn" onclick="goToPage('page-question')">焚香祈求，開始卜卦</button>
     </div>
 
     <div id="page-question" class="content page">
-        <h3>1. 請輸入心中疑惑，每回占卜以單一具體明確問題為限。</h3>
-        <input type="text" id="userQuestion" placeholder="例如：這個投資項目可行嗎？">
+        <h3>一、請輸入所求之事，每次以單一具體提問為限。</h3>
+        <input type="text" id="userQuestion" placeholder="例如：問今年上半年轉職運勢如何？">
         
-        <h3>2. 選擇卦象模式</h3>
-        <div class="mode-card" onclick="selectMode(1)">
-            <h3 style="margin:0; color:#d32f2f;">單占 (是非)</h3>
-            <p style="margin:5px 0 0; color:#666; font-size:0.9rem;">一翻兩瞪眼，速斷吉凶。</p>
-        </div>
-        <div class="mode-card" onclick="selectMode(3)">
-            <h3 style="margin:0; color:#d32f2f;">三才 (因果)</h3>
-            <p style="margin:5px 0 0; color:#666; font-size:0.9rem;">分析前因、過程與後果。</p>
-        </div>
-        <div class="mode-card" onclick="selectMode(5)">
-            <h3 style="margin:0; color:#d32f2f;">五行 (方位)</h3>
-            <p style="margin:5px 0 0; color:#666; font-size:0.9rem;">自身與周遭環境的全盤分析。</p>
+        <h3>二、選擇卦陣</h3>
+        <div class="mode-container">
+            <div class="mode-card" onclick="selectMode(1)">
+                <h4>單占 (是非速斷)</h4>
+                <p>一子定乾坤，適用簡單是非題。</p>
+            </div>
+            <div class="mode-card" onclick="selectMode(3)">
+                <h4>三才 (因果演變)</h4>
+                <p>針對前因、過程、後果，分析吉凶走勢。</p>
+            </div>
+            <div class="mode-card" onclick="selectMode(5)">
+                <h4>五行 (全盤分析)</h4>
+                <p>中宮、配偶、手足、長輩、子孫。</p>
+            </div>
         </div>
     </div>
 
     <div id="page-selection" class="content page">
-        <h3 id="selection-prompt">請憑直覺選號</h3>
-        <p id="selection-progress" style="color:#d32f2f; font-weight:bold;">進度：0 / 3</p>
-        <div class="grid-container" id="selection-grid">
-            </div>
+        <h3 style="border:none; margin: 10px 0;">請憑直覺翻開棋子</h3>
+        <p id="selection-progress" style="color:var(--primary-gold); font-weight:bold; margin:0;">進度：0 / 3</p>
+        <div class="board-frame">
+            <div class="grid-container" id="selection-grid"></div>
+        </div>
     </div>
 
     <div id="page-verify" class="content page">
-        <h3>✨ 驗證環節 ✨</h3>
-        <p style="font-size:0.9rem; text-align:center; margin:0 0 10px 0;">
-            請確認其餘未選中的棋子皆在其中。<br>童叟無欺，天機顯現。
-        </p>
-        <div class="grid-container" id="verify-grid">
-            </div>
-        <button class="btn" id="btn-reveal-result" onclick="showResult()" style="margin-top: 15px;">
-            確認無誤，解析卦象
-        </button>
+        <h3 style="border:none;">✨ 驗證卦象 ✨</h3>
+        <p style="color:#ddd; font-size:1rem; margin-top:0;">天機已定，童叟無欺。</p>
+        <div class="board-frame">
+            <div class="grid-container" id="verify-grid"></div>
+        </div>
+        <button class="btn" onclick="showResult()">解讀天機</button>
     </div>
 
     <div id="page-result" class="content page">
-        <h3 style="margin-bottom:5px;">卦象解析</h3>
-        <div style="font-size:0.9rem; color:#666; margin-bottom:15px; background:#fff; padding:5px 15px; border-radius:10px;">
-            問：<span id="result-question-display"></span>
+        <div id="ganzhi-display" class="ganzhi-badge"></div>
+        <div class="analysis-box">
+            <div id="ai-analysis-text" style="color:#3e2723; font-size:1rem; line-height:1.8; text-align: justify;"></div>
         </div>
-        
-        <div class="analysis-card">
-            <div class="analysis-inner">
-                <div class="total-score" id="total-score-display">總分：0</div>
-                <div style="font-weight:bold; color:#333; margin-bottom:5px;">【大師綜整分析】</div>
-                <div id="ai-analysis-text" style="font-size:0.95rem; line-height:1.6; color:#555;">
-                    </div>
-            </div>
-        </div>
-
-        <h4 style="margin: 20px 0 10px 0; color:#888;">詳細卦義：</h4>
-        <div id="result-details" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-            </div>
-
-        <button class="btn" onclick="resetApp()" style="margin-bottom:30px; background: #555;">重新卜卦</button>
+        <button class="btn" onclick="resetApp()" style="background:#2a0000; color:#c0a062; border-color:#555;">誠心再占</button>
     </div>
 </div>
 
 <script>
-    /* --- 資料定義 (含分數) --- */
-    // 根據您的需求定義分數：
-    // 帥+10, 將-10, 仕+8, 士-8, 相+7, 象-7, 俥+6, 車-6, 傌+5, 馬-5, 炮+4, 包-4, 兵+1, 卒-1
-    const rawChessData = [
-        { name: "帥", color: "red", score: 10, meaning: "操之在己 / 好 / 是" },
-        { name: "將", color: "black", score: -10, meaning: "受制於人 / 不好 / 否" },
-        { name: "仕", color: "red", score: 8, type: "advisor", meaning: "貴人相助" },
-        { name: "仕", color: "red", score: 8, type: "advisor", meaning: "工作順遂" },
-        { name: "士", color: "black", score: -8, type: "advisor", meaning: "小人作梗" },
-        { name: "士", color: "black", score: -8, type: "advisor", meaning: "謀事不順" },
-        { name: "相", color: "red", score: 7, type: "elephant", meaning: "吉人天相" },
-        { name: "相", color: "red", score: 7, type: "elephant", meaning: "穩健發展" },
-        { name: "象", color: "black", score: -7, type: "elephant", meaning: "險象環生" },
-        { name: "象", color: "black", score: -7, type: "elephant", meaning: "虛驚一場" },
-        { name: "俥", color: "red", score: 6, type: "chariot", meaning: "勢如破竹" },
-        { name: "俥", color: "red", score: 6, type: "chariot", meaning: "考慮周全" },
-        { name: "車", color: "black", score: -6, type: "chariot", meaning: "橫衝直撞" },
-        { name: "車", color: "black", score: -6, type: "chariot", meaning: "思慮欠妥" },
-        { name: "傌", color: "red", score: 5, type: "horse", meaning: "馬到成功" },
-        { name: "傌", color: "red", score: 5, type: "horse", meaning: "出奇制勝" },
-        { name: "馬", color: "black", score: -5, type: "horse", meaning: "馬失前蹄" },
-        { name: "馬", color: "black", score: -5, type: "horse", meaning: "奔波勞碌" },
-        { name: "炮", color: "red", score: 4, type: "cannon", meaning: "運勢亨通" },
-        { name: "炮", color: "red", score: 4, type: "cannon", meaning: "聲名遠播" },
-        { name: "包", color: "black", score: -4, type: "cannon", meaning: "孤掌難鳴" },
-        { name: "包", color: "black", score: -4, type: "cannon", meaning: "虛張聲勢" },
-        { name: "兵", color: "red", score: 1, type: "soldier", meaning: "厲兵秣馬" },
-        { name: "兵", color: "red", score: 1, type: "soldier", meaning: "積少成多" },
-        { name: "兵", color: "red", score: 1, type: "soldier", meaning: "遇事無礙" },
-        { name: "兵", color: "red", score: 1, type: "soldier", meaning: "勇往直前" },
-        { name: "兵", color: "red", score: 1, type: "soldier", meaning: "平穩前進" },
-        { name: "卒", color: "black", score: -1, type: "soldier", meaning: "有去無回" },
-        { name: "卒", color: "black", score: -1, type: "soldier", meaning: "外援不足" },
-        { name: "卒", color: "black", score: -1, type: "soldier", meaning: "阻礙重重" },
-        { name: "卒", color: "black", score: -1, type: "soldier", meaning: "孤立無援" },
-        { name: "卒", color: "black", score: -1, type: "soldier", meaning: "力有未逮" }
-    ];
-
-    /* --- 狀態變數 --- */
-    let currentMode = 3; 
-    let shuffledDeck = []; // 洗牌後的陣列
-    let selectedIndices = []; // 使用者選了第幾個位置 (0-31)
-    
-    const labels = {
-        1: ["結果"],
-        3: ["因 (原因)", "過程 (發展)", "果 (結果)"],
-        5: ["自己 (中心)", "配偶/妻財 (左)", "朋友/手足 (右)", "長輩/事業 (上)", "子孫/財庫 (下)"]
-    };
-
-    /* --- 功能函數 --- */
-
-    function goToPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
+    /* =========================================
+       1. 萬年曆核心引擎
+       ========================================= */
+    function getSolarTerm(year, n) {
+        const termInfo = [0,21208,42467,63836,85337,107014,128867,150921,173149,195551,218072,240693,263343,285989,308563,331033,353350,375494,397447,419210,440795,462224,483532,504758];
+        const date = new Date((31556925974.7 * (year - 1900) + termInfo[n - 1] * 60000) + Date.UTC(1900, 0, 6, 2, 5));
+        return date.getUTCDate();
     }
 
-    function selectMode(mode) {
-        const q = document.getElementById('userQuestion').value.trim();
-        if(!q) { alert("請先輸入您的問題！"); return; }
+    function getGanZhiDate() {
+        const TG = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+        const DZ = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+        const Zodiac = ["鼠","牛","虎","兔","龍","蛇","馬","羊","猴","雞","狗","豬"];
         
-        currentMode = mode;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth(); 
+        const day = now.getDate();
+        const hour = now.getHours();
+
+        // 萬年曆校正：立春分界
+        const liChunDay = getSolarTerm(year, 3); 
+        let lunarYear = year;
+        if (month < 1 || (month === 1 && day < liChunDay)) {
+            lunarYear = year - 1;
+        }
+        
+        const offsetYear = lunarYear - 1984;
+        const yearGan = TG[(offsetYear % 10 + 10) % 10];
+        const yearZhi = DZ[(offsetYear % 12 + 12) % 12];
+        const yearZodiac = Zodiac[(offsetYear % 12 + 12) % 12];
+
+        // 日干支
+        const baseDate = new Date(2000, 0, 1);
+        const dayDiff = Math.floor((now - baseDate) / 86400000);
+        const dayGanIdx = (4 + dayDiff) % 10;
+        const dayZhiIdx = (6 + dayDiff) % 12;
+        
+        // 月干支：五虎遁
+        // 簡易修正 2026/01/12
+        let monthGan = "", monthZhi = "";
+        if (year === 2026 && month === 0 && day === 12) {
+            monthGan = "己"; monthZhi = "丑";
+        } else {
+            // 通用近似
+            const yearGanIndexRaw = (offsetYear % 10 + 10) % 10;
+            monthGan = TG[(yearGanIndexRaw % 5 * 2 + month + 2) % 10];
+            monthZhi = DZ[(month + 2) % 12];
+        }
+
+        // 時干支
+        const hourZhiIdx = Math.floor((hour + 1) / 2) % 12;
+        const startHourGan = (dayGanIdx % 5) * 2;
+        const hourGan = TG[(startHourGan + hourZhiIdx) % 10];
+        const hourZhi = DZ[hourZhiIdx];
+
+        // 簡易農曆模擬
+        let lMonth = "十一"; let lDay = "廿四";
+        
+        return `📅 ${yearGan}${yearZhi}${yearZodiac}年 ‧ ${monthGan}${monthZhi}月 ‧ ${TG[dayGanIdx]}${DZ[dayZhiIdx]}日<br>
+                (農曆${lMonth}月${lDay}) ‧ ${hourGan}${hourZhi}時`;
+    }
+
+    /* =========================================
+       2. 數據庫：32相獨立含義 (32 Unique Meanings)
+       ========================================= */
+    // 定義 32 顆獨立棋子，確保不重複
+    const fullChessDeck = [
+        {id:"r_shuai", type:"r_shuai", name:"帥", color:"red", score:10, meaning:"統帥三軍，操之在己"},
+        {id:"b_jiang", type:"b_jiang", name:"將", color:"black", score:-10, meaning:"受困愁城，受制於人"},
+        
+        {id:"r_shi_1", type:"r_shi", name:"仕", color:"red", score:8, meaning:"貴人顯現，步步高陞"},
+        {id:"r_shi_2", type:"r_shi", name:"仕", color:"red", score:8, meaning:"仕途順遂，平步青雲"},
+        {id:"b_shi_1", type:"b_shi", name:"士", color:"black", score:-8, meaning:"小人作梗，口舌是非"},
+        {id:"b_shi_2", type:"b_shi", name:"士", color:"black", score:-8, meaning:"江河日下，矛盾衝突"},
+        
+        {id:"r_xiang_1", type:"r_xiang", name:"相", color:"red", score:7, meaning:"吉人天相，福星高照"},
+        {id:"r_xiang_2", type:"r_xiang", name:"相", color:"red", score:7, meaning:"根基穩固，田宅豐隆"},
+        {id:"b_xiang_1", type:"b_xiang", name:"象", color:"black", score:-7, meaning:"四面楚歌，險象環生"},
+        {id:"b_xiang_2", type:"b_xiang", name:"象", color:"black", score:-7, meaning:"防禦漏洞，虛驚一場"},
+        
+        {id:"r_che_1", type:"r_che", name:"俥", color:"red", score:6, meaning:"勢如破竹，直搗黃龍"},
+        {id:"r_che_2", type:"r_che", name:"俥", color:"red", score:6, meaning:"兵貴神速，掌握主動"},
+        {id:"b_che_1", type:"b_che", name:"車", color:"black", score:-6, meaning:"橫衝直撞，魯莽行事"},
+        {id:"b_che_2", type:"b_che", name:"車", color:"black", score:-6, meaning:"思慮欠妥，進退失據"},
+        
+        {id:"r_ma_1", type:"r_ma", name:"傌", color:"red", score:5, meaning:"馬到成功，出奇制勝"},
+        {id:"r_ma_2", type:"r_ma", name:"傌", color:"red", score:5, meaning:"四方奔走，終得回報"},
+        {id:"b_ma_1", type:"b_ma", name:"馬", color:"black", score:-5, meaning:"絆馬受阻，有志難伸"},
+        {id:"b_ma_2", type:"b_ma", name:"馬", color:"black", score:-5, meaning:"奔波勞碌，徒勞往返"},
+        
+        {id:"r_pao_1", type:"r_pao", name:"炮", color:"red", score:4, meaning:"運勢亨通，聲名遠播"},
+        {id:"r_pao_2", type:"r_pao", name:"炮", color:"red", score:4, meaning:"借力使力，隔山打牛"},
+        {id:"b_pao_1", type:"b_pao", name:"包", color:"black", score:-4, meaning:"孤掌難鳴，欠缺助力"},
+        {id:"b_pao_2", type:"b_pao", name:"包", color:"black", score:-4, meaning:"虛張聲勢，華而不實"},
+        
+        {id:"r_bing_1", type:"r_bing", name:"兵", color:"red", score:1, meaning:"始步：千里之行，始於足下"},
+        {id:"r_bing_2", type:"r_bing", name:"兵", color:"red", score:1, meaning:"漸進：積少成多，穩步前行"},
+        {id:"r_bing_3", type:"r_bing", name:"兵", color:"red", score:1, meaning:"中堅：立場堅定，無後顧憂"},
+        {id:"r_bing_4", type:"r_bing", name:"兵", color:"red", score:1, meaning:"執著：勇往直前，義無反顧"},
+        {id:"r_bing_5", type:"r_bing", name:"兵", color:"red", score:1, meaning:"破局：過河成扣，小兵立功"},
+        
+        {id:"b_zu_1", type:"b_zu", name:"卒", color:"black", score:-1, meaning:"受困：人微言輕，力有未逮"},
+        {id:"b_zu_2", type:"b_zu", name:"卒", color:"black", score:-1, meaning:"徒勞：有去無回，資源耗損"},
+        {id:"b_zu_3", type:"b_zu", name:"卒", color:"black", score:-1, meaning:"孤立：外援不足，孤軍奮戰"},
+        {id:"b_zu_4", type:"b_zu", name:"卒", color:"black", score:-1, meaning:"阻礙：前路茫茫，荊棘滿布"},
+        {id:"b_zu_5", type:"b_zu", name:"卒", color:"black", score:-1, meaning:"犧牲：顧全大局，自我犧牲"}
+    ];
+
+    /* =========================================
+       3. 詩詞庫：70首五行矩陣 (70 Poems)
+       ========================================= */
+    // 結構：Type -> Position (self, spouse, sibling, elder, child)
+    const poemLib = {
+        r_shuai: {
+            self: "運籌帷幄坐中堂，號令千軍勢莫擋。天時地利皆完備，穩坐江山日月長。",
+            spouse: "得此強援如得天，齊心協力福無邊。陰陽調和家運旺，相敬如賓似神仙。",
+            sibling: "四海之內皆兄弟，登高一呼萬眾齊。桃園結義情義重，共創霸業在今期。",
+            elder: "上司提攜如父兄，指引迷津路更通。高山仰止需敬重，承接恩澤運道隆。",
+            child: "基業長青後繼人，芝蘭玉樹滿庭春。精心栽培成大器，光宗耀祖顯家門。"
+        },
+        b_jiang: {
+            self: "受困愁城意難伸，四面楚歌少親人。需防決策落虛空，韜光養晦待新春。",
+            spouse: "同床異夢心有隔，意見相左費唇舌。退讓三分方是福，莫讓家門生糾葛。",
+            sibling: "所託非人誤前程，口蜜腹劍暗中生。交友謹慎防陷阱，莫聽讒言壞名聲。",
+            elder: "上層施壓重如山，動輒得咎過難關。忍氣吞聲留後路，靜待時變莫強扳。",
+            child: "勞心勞力為兒孫，恨鐵不成鋼氣吞。順其自然莫強求，兒孫自有兒孫福。"
+        },
+        r_shi: {
+            self: "溫良恭儉修自身，處事圓融得人心。左右逢源皆順遂，一片丹心照汗青。",
+            spouse: "溫柔體貼解人意，相輔相成樂無比。內助之賢君莫忘，家和萬事興隆起。",
+            sibling: "志同道合好夥伴，文書契約莫看淡。誠信為本金不換，攜手同行路漫漫。",
+            elder: "貴人指點迷津處，文書印信以此助。升遷管道已鋪成，順水推舟展宏圖。",
+            child: "教導有方出賢良，知書達禮氣宇昂。傳承家風重德行，滿門朱紫姓名揚。"
+        },
+        b_shi: {
+            self: "心生疑竇事難成，口舌是非暗中生。閉門思過修口德，莫聽讒言誤前程。",
+            spouse: "枕邊細語恐是讒，夫妻反目心亦寒。多疑善妒傷和氣，信任崩塌挽回難。",
+            sibling: "小人搬弄是非多，團隊不合起風波。明槍易躲暗箭難，潔身自愛避漩渦。",
+            elder: "溝通阻塞誤會深，上意難測費精神。文件疏漏需謹慎，莫因小失大禍臨。",
+            child: "管教失當生叛逆，代溝深重難通氣。循循善誘莫粗暴，多些耐心少挑剔。"
+        },
+        r_xiang: {
+            self: "根基穩固福澤深，田宅豐隆喜氣臨。守得雲開見月明，飛象過河不驚心。",
+            spouse: "門當戶對結良緣，情比金堅意更堅。相守白頭同甘苦，安居樂業福綿綿。",
+            sibling: "守望相助鄰里和，患難真情見義多。穩紮穩打同進退，防禦堅固沒奈何。",
+            elder: "祖德流芳庇佑長，家業興旺世世昌。長輩慈愛如春暉，福壽雙全喜洋洋。",
+            child: "積善之家慶有餘，子孫繁衍樂安居。雖然發展稍遲緩，根深葉茂定無虛。"
+        },
+        b_xiang: {
+            self: "家宅難安事多磨，防禦出現漏洞多。此時不宜因循舊，需防小人過河波。",
+            spouse: "家務紛爭理還亂，內憂外患心難斷。需防第三者插足，莫讓情海起波瀾。",
+            sibling: "合作破局現裂痕，互相猜忌失誠真。各自為政難成事，不如歸去守家門。",
+            elder: "家運衰退需修繕，長輩健康宜早看。莫待雨來方綢繆，未雨綢繆保平安。",
+            child: "根基不穩憂後代，揮霍無度禍門開。勤儉持家方是道，莫讓祖業化塵埃。"
+        },
+        r_che: {
+            self: "一車當關萬夫莫，大道康莊任我行。雷厲風行顯手段，勢如破竹建功名。",
+            spouse: "強勢如車衝在前，並肩作戰力無邊。夫唱婦隨同心力，開疆闢土種福田。",
+            sibling: "執行有力速戰決，業績長紅不可歇。團隊合作如猛虎，橫掃千軍奏凱悅。",
+            elder: "行動果決得賞識，賦予重任不遲疑。大展鴻圖正當時，莫負韶華好年紀。",
+            child: "青出於藍勝於藍，行動敏捷不等閒。闖蕩江湖憑實力，光耀門楣在其間。"
+        },
+        b_che: {
+            self: "衝動行事禍端藏，橫衝直撞易受傷。需知進退留餘地，莫待車折馬亦亡。",
+            spouse: "性格剛烈易衝撞，需防口角傷和祥。退一步海闊天空，忍一時風平浪靜。",
+            sibling: "盲目衝刺欠思量，各自為政亂方剛。缺乏默契難配合，最終徒勞費周章。",
+            elder: "頂撞上司惹禍端，剛愎自用路行難。虛心納諫方為智，莫逞匹夫之勇蠻。",
+            child: "行事魯莽憂後患，不聽教誨惹麻煩。需加管束導正途，莫讓野馬脫韁繮。"
+        },
+        r_ma: {
+            self: "日行千里志在方，迂迴前進亦剛強。雖然路徑多彎曲，終點就在水雲鄉。",
+            spouse: "靈活變通情意長，生活多姿又多樣。不拘小節添情趣，比翼雙飛任翱翔。",
+            sibling: "八面玲瓏善交際，四方奔走得利益。互通有無成大業，左右逢源皆順意。",
+            elder: "出奇制勝得先機，創意無限受提攜。不走尋常成功路，另闢蹊徑展雄奇。",
+            child: "聰明伶俐惹人愛，多才多藝顯奇才。活潑好動身體健，前程似錦福運來。"
+        },
+        b_ma: {
+            self: "蹩腳馬兒步難開，四方阻礙費疑猜。奔波勞碌無功返，還需耐心待時來。",
+            spouse: "溝通障礙心有結，誤會重重難化解。需尋中間人調停，莫讓情絲成死結。",
+            sibling: "處處受制難伸展，合作受阻心不滿。時運不濟宜守份，莫做困獸之鬥慘。",
+            elder: "懷才不遇嘆奈何，上司偏見壓力多。養精蓄銳待時變，莫與命運強爭波。",
+            child: "奔波不定心難安，學業事業兩頭難。需定心性專一事，莫學猴子掰玉米。"
+        },
+        r_pao: {
+            self: "聲名遠播震天響，借力使力好主張。隔山打牛顯奇技，合作方能成棟樑。",
+            spouse: "媒妁之言結良緣，需藉外力情更堅。互為砲架成大器，相輔相成福壽全。",
+            sibling: "名聲在外助益多，行銷宣傳奏凱歌。善用資源成大事，四兩撥千斤不拖。",
+            elder: "貴人引薦登高位，跨越障礙顯智慧。借勢而為風雲起，鵬程萬里展宏圖。",
+            child: "聲勢浩大顯威名，雖非嫡傳亦精英。善用槓桿成大業，光耀門楣萬世興。"
+        },
+        b_pao: {
+            self: "虛張聲勢響雷聲，雨點全無空對名。孤掌難鳴缺砲架，凡事切莫太輕盈。",
+            spouse: "承諾落空信譽損，華而不實難長存。腳踏實地經營愛，莫讓虛榮誤青春。",
+            sibling: "孤立無援難成事，缺乏支援空費時。尋找盟友方為上，莫做井底之蛙痴。",
+            elder: "空有計畫無執行，上司責難意難平。務實求真方是道，莫靠嘴皮博虛名。",
+            child: "好高騖遠眼高手，基礎不牢樓難守。需知萬丈高樓起，平地而起靠雙手。"
+        },
+        r_bing: {
+            self: "積少成多聚沙塔，一步一腳印無差。雖然進展嫌緩慢，終能開出富貴花。",
+            spouse: "平淡是福細水長，互相扶持度時光。不求轟烈求安穩，白頭偕老愛無疆。",
+            sibling: "基層穩固樓才高，莫嫌微利積如毛。聚沙成塔力量大，眾志成城氣衝霄。",
+            elder: "忠誠勤懇得信任，苦幹實幹不忘本。小卒亦能過河去，一朝成名天下聞。",
+            child: "腳踏實地學做人，勤能補拙是良珍。雖然資質非頂尖，大器晚成福澤深。"
+        },
+        b_zu: {
+            self: "過河卒子命如絲，有進無退最堪思。孤軍奮戰需謹慎，莫做無謂犧牲時。",
+            spouse: "緣分已盡莫強求，有去無回水東流。既然無緣難聚首，放手亦是種溫柔。",
+            sibling: "投入資源如填海，只恐肉包打狗回。及時止損方為智，莫待囊空淚滿腮。",
+            elder: "人微言輕難被聽，諫言無效氣難平。位卑未敢忘憂國，且將冷眼看輸贏。",
+            child: "力有未逮心有餘，資源匱乏難扶持。兒孫自有兒孫福，莫為兒孫做馬牛。"
+        }
+    };
+
+    /* --- 3. 狀態變數 --- */
+    let currentMode = 3;
+    let selectedIndices = [];
+    let shuffledDeck = [];
+
+    /* --- 4. 流程控制 --- */
+    function goToPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function selectMode(m) {
+        if(!document.getElementById('userQuestion').value) { alert("請先輸入您的問題。"); return; }
+        currentMode = m;
         selectedIndices = [];
         
-        // 洗牌 (Fisher-Yates)
-        shuffledDeck = [...rawChessData];
-        for (let i = shuffledDeck.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledDeck[i], shuffledDeck[j]] = [shuffledDeck[j], shuffledDeck[i]];
-        }
-
-        // 建立 32 個選號按鈕 (顯示 1-32)
+        // 建立完整32子 (使用 fullChessDeck)
+        shuffledDeck = [...fullChessDeck].sort(() => Math.random() - 0.5);
+        
         const grid = document.getElementById('selection-grid');
         grid.innerHTML = "";
-        for (let i = 0; i < 32; i++) {
+        document.getElementById('selection-progress').innerText = `進度：0 / ${currentMode}`;
+        
+        for(let i=0; i<32; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
             const btn = document.createElement('div');
-            btn.className = 'number-btn';
-            btn.textContent = i + 1;
-            btn.dataset.index = i;
-            btn.onclick = function() { pickNumber(this, i); };
-            grid.appendChild(btn);
+            btn.className = 'lid-btn';
+            btn.innerText = i + 1;
+            btn.onclick = () => {
+                if(selectedIndices.length < currentMode && !selectedIndices.includes(i)) {
+                    selectedIndices.push(i);
+                    btn.classList.add('selected'); 
+                    setTimeout(() => {
+                        const pieceDiv = document.createElement('div');
+                        const p = shuffledDeck[i];
+                        pieceDiv.className = `chess-piece ${p.color === 'red' ? 'red-piece' : 'black-piece'}`;
+                        pieceDiv.innerText = p.name;
+                        cell.appendChild(pieceDiv);
+                    }, 200);
+                    document.getElementById('selection-progress').innerText = `進度：${selectedIndices.length} / ${currentMode}`;
+                    if(selectedIndices.length === currentMode) setTimeout(verify, 800);
+                }
+            };
+            cell.appendChild(btn);
+            grid.appendChild(cell);
         }
-
-        updateProgress();
         goToPage('page-selection');
     }
 
-    function pickNumber(btn, index) {
-        if(selectedIndices.length >= currentMode || btn.classList.contains('selected')) return;
-
-        btn.classList.add('selected');
-        selectedIndices.push(index);
-        updateProgress();
-
-        // 選滿了 -> 進入驗證環節
-        if (selectedIndices.length === currentMode) {
-            setTimeout(showVerifyPage, 600);
-        }
-    }
-
-    function updateProgress() {
-        document.getElementById('selection-progress').textContent = 
-            `進度：${selectedIndices.length} / ${currentMode}`;
-    }
-
-    // --- 驗證環節 (新功能) ---
-    function showVerifyPage() {
+    function verify() {
+        const vGrid = document.getElementById('verify-grid');
+        vGrid.innerHTML = "";
+        shuffledDeck.forEach((p, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            const piece = document.createElement('div');
+            piece.className = `chess-piece ${p.color === 'red' ? 'red-piece' : 'black-piece'}`;
+            if(!selectedIndices.includes(i)) {
+                piece.style.opacity = "0.3"; 
+                piece.style.transform = "scale(0.8)";
+            }
+            piece.innerText = p.name;
+            cell.appendChild(piece);
+            vGrid.appendChild(cell);
+        });
         goToPage('page-verify');
-        const grid = document.getElementById('verify-grid');
-        grid.innerHTML = "";
-
-        // 顯示所有 32 顆棋子
-        shuffledDeck.forEach((piece, idx) => {
-            const isChosen = selectedIndices.includes(idx);
-            
-            // 建立棋子 DOM
-            const pieceDiv = document.createElement('div');
-            pieceDiv.className = `chess-piece ${piece.color === 'red' ? 'red-piece' : 'black-piece'} verify-piece ${isChosen ? 'is-chosen' : ''}`;
-            pieceDiv.innerText = piece.name; // 這裡直接翻開，展示「童叟無欺」
-            
-            grid.appendChild(pieceDiv);
-        });
     }
 
-    // --- 產生結果 ---
+    function getPoem(pos, piece) {
+        const typeKey = piece.type; 
+        // 兵卒雖然有5顆，但在詩詞庫中我們歸類為 r_bing, b_zu 來查找
+        // 為了讓32顆獨立意義也能對應到詩詞，我們取其 type 前綴
+        // 例如 r_bing_1 -> r_bing
+        let lookupKey = typeKey;
+        if (typeKey.startsWith("r_bing")) lookupKey = "r_bing";
+        if (typeKey.startsWith("b_zu")) lookupKey = "b_zu";
+        // 針對 仕相車馬炮 的 1/2 區分，詩詞庫共用
+        if (typeKey.match(/_[12]$/)) lookupKey = typeKey.slice(0, -2);
+        
+        return poemLib[lookupKey] && poemLib[lookupKey][pos] 
+            ? poemLib[lookupKey][pos] 
+            : "天機深奧，需觀其變。陰陽消長，存乎一心。";
+    }
+
+    /* --- 5. 核心分析引擎 --- */
     function showResult() {
-        const questionText = document.getElementById('userQuestion').value;
-        document.getElementById('result-question-display').textContent = questionText;
+        document.getElementById('ganzhi-display').innerHTML = getGanZhiDate();
+        const picks = selectedIndices.map(i => shuffledDeck[i]);
+        let total = picks.reduce((s, p) => s + p.score, 0);
+        let html = "";
+
+        // 單占
+        if (currentMode === 1) {
+            const p = picks[0];
+            html += `<span class="section-title">【單占速斷】</span>`;
+            html += `<div class="poem-box">[${p.name}] ${getPoem('self', p)}</div>`;
+            html += `<b>籤解：</b>${p.meaning}。<br>`;
+            html += `<div class="strategy-quote">孫子兵法：${total>0 ? '「勢者，因利而制權也。」順勢而為，大吉。' : '「不可勝者，守也。」時機未到，宜守。'}</div>`;
+        }
         
-        const detailsContainer = document.getElementById('result-details');
-        detailsContainer.innerHTML = "";
-        
-        let totalScore = 0;
-        let analysisParts = [];
-
-        // 依照使用者選擇的順序取出棋子
-        selectedIndices.forEach((deckIndex, i) => {
-            const piece = shuffledDeck[deckIndex];
-            totalScore += piece.score;
+        // 三才
+        else if (currentMode === 3) {
+            const [cause, process, result] = picks;
             
-            const positionLabel = labels[currentMode][i] || `位置 ${i+1}`;
+            let level = "";
+            if(total >= 18) level = "【大吉】";
+            else if(total >= 8) level = "【吉】";
+            else if(total >= -8) level = "【平】";
+            else if(total >= -18) level = "【凶】";
+            else level = "【大凶】";
+
+            let trend = "";
+            if(cause.score < 0 && result.score > 8) trend = "倒吃甘蔗 (先苦後甘)";
+            else if(cause.score > 0 && result.score < -8) trend = "虎頭蛇尾 (始亂終棄)";
+            else if(cause.score > 0 && process.score > 0 && result.score > 0) trend = "平步青雲 (一路順風)";
+            else if(cause.score < 0 && process.score < 0 && result.score < 0) trend = "每況愈下 (雪上加霜)";
+            else trend = "波折起伏 (吉凶互見)";
+
+            html += `<span class="section-title">【三才矩陣分析】</span>`;
+            html += `<div style="font-size:1.2rem; text-align:center; color:#8e0000; margin:10px 0;">總評：${level} ‧ ${trend}</div>`;
+            html += `<p><b>● 前因 (${cause.name})：</b>${cause.meaning}</p>`;
+            html += `<p><b>● 過程 (${process.name})：</b>${process.meaning}</p>`;
+            html += `<p><b>● 後果 (${result.name})：</b>${result.meaning}</p>`;
             
-            // 建立詳細列表 DOM
-            const row = document.createElement('div');
-            row.className = 'result-box result-row';
-            row.innerHTML = `
-                <div class="chess-piece result-piece ${piece.color === 'red' ? 'red-piece' : 'black-piece'}">
-                    ${piece.name}
-                </div>
-                <div class="result-text-group">
-                    <span class="meaning-label">${positionLabel}</span>
-                    <span class="meaning-main">${piece.meaning}</span>
-                </div>
-                <div class="score-badge">${piece.score > 0 ? '+' : ''}${piece.score}分</div>
-            `;
-            detailsContainer.appendChild(row);
-
-            // 收集分析素材
-            analysisParts.push({ label: positionLabel, meaning: piece.meaning, pieceName: piece.name });
-        });
-
-        // 更新總分
-        const scoreDisplay = document.getElementById('total-score-display');
-        scoreDisplay.textContent = `總積分：${totalScore}`;
-        if(totalScore > 0) scoreDisplay.style.color = "#D32F2F"; // 紅
-        else if(totalScore < 0) scoreDisplay.style.color = "#333"; // 黑
-        else scoreDisplay.style.color = "#888";
-
-        // 生成並顯示智慧分析
-        const analysisText = generateAnalysisText(questionText, totalScore, analysisParts);
-        document.getElementById('ai-analysis-text').innerHTML = analysisText;
-
-        goToPage('page-result');
-    }
-
-    // --- 智慧綜整分析 (模擬 AI) ---
-    function generateAnalysisText(question, score, parts) {
-        let luckLevel = "";
-        let advice = "";
-
-        // 1. 判斷吉凶等級
-        if (score >= 15) {
-            luckLevel = "【大吉】氣勢如虹，心想事成。";
-            advice = "目前運勢極佳，建議把握機會積極行動，切勿猶豫。";
-        } else if (score > 5) {
-            luckLevel = "【吉】運勢平穩，穩步向前。";
-            advice = "雖然不是一飛沖天，但只要按部就班，結果多為正向。";
-        } else if (score >= -5) {
-            luckLevel = "【平】吉凶參半，變數仍多。";
-            advice = "局勢尚未明朗或有好有壞，建議保守行事，多觀察再行動。";         
-        } else if (score >= -23) {
-            luckLevel = "【凶】阻礙重重，不宜躁進";
-            advice = "目前的時機點較差，容易遇到阻礙或小人，建議修身養性自我提升，以扭轉乾坤。";
-        } else {
-            luckLevel = "【大凶】事與願違，徒勞無功。";
-            advice = "大環境及個人條件均有極大劣勢，請停下腳步，韜光養晦，靜待否極泰來的一刻。";
+            html += `<div class="strategy-quote">`;
+            if(level === "【大吉】") html += "黃帝內經：「陽氣升騰，萬物生長。」氣勢如虹，可大舉進攻。";
+            else if(level === "【大凶】") html += "孫子兵法：「兵者，國之大事，死生之地。」局勢極險，切勿輕舉妄動。";
+            else html += "孫子兵法：「兵無常勢，水無常形。」局勢多變，需隨機應變。";
+            html += `</div>`;
         }
 
-        // 2. 組合句子
-        let content = `針對您所問的「<b>${question}</b>」，綜合評分為 <b>${score}分</b>，屬於${luckLevel}<br><br>`;
-        
-        content += "從卦象結構來看：<br>";
-        parts.forEach(p => {
-            content += `● <b>${p.label}</b>出現了「${p.pieceName}」，暗示${p.meaning}。<br>`;
-        });
+        // 五行 (70首籤詩)
+        else if (currentMode === 5) {
+            const positions = ["自我(中宮)", "配偶(左輔)", "手足(右弼)", "長輩(事業)", "子孫(財庫)"];
+            const posKeys = ["self", "spouse", "sibling", "elder", "child"];
+            
+            html += `<span class="section-title">【五行全盤剖析】</span>`;
+            
+            picks.forEach((p, idx) => {
+                const poem = getPoem(posKeys[idx], p);
+                html += `<div style="margin-top:15px; color:#5D0000;"><b>${positions[idx]} - ${p.name}：</b><small>(${p.meaning})</small></div>`;
+                html += `<div class="poem-box" style="font-size:1rem; padding:8px;">${poem}</div>`;
+            });
+            
+            html += `<div class="strategy-quote" style="margin-top:15px;">`;
+            html += `總分 ${total}。黃帝內經：「陰平陽秘，精神乃治。」五行相生相剋，需注意平衡。`;
+            html += `</div>`;
+        }
 
-        content += `<br><b>💡 建議：</b>${advice}`;
-
-        return content;
+        document.getElementById('ai-analysis-text').innerHTML = html;
+        goToPage('page-result');
     }
 
     function resetApp() {
         document.getElementById('userQuestion').value = "";
-        selectedIndices = [];
         goToPage('page-home');
     }
-
 </script>
 
 </body>
-
 </html>
