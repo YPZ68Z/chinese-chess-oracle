@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>中華棋卦 v1.0.0</title>
+    <title>中華棋卦 v1.0.1</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -563,10 +563,10 @@
             const [cause, process, result] = picks;
             
             let level = "";
-            if(total >= 15) level = "【大吉】";
-            else if(total > 5) level = "【吉】";
-            else if(total >= -5) level = "【平】";
-            else if(total >= -15) level = "【凶】";
+            if(total >= 12) level = "【大吉】";
+            else if(total > 4) level = "【吉】";
+            else if(total >= -4) level = "【平】";
+            else if(total > -14) level = "【凶】";
             else level = "【大凶】";
 
             let trend = "";
@@ -594,13 +594,6 @@
             const positions = ["自我(中宮)", "配偶(左輔)", "手足(右弼)", "長輩(事業)", "子孫(財庫)"];
             const posKeys = ["self", "spouse", "sibling", "elder", "child"];
             
-            let level = "";
-            if(total >= 12) level = "【大吉】";
-            else if(total > 4) level = "【吉】";
-            else if(total >= -4) level = "【平】";
-            else if(total >= -12) level = "【凶】";
-            else level = "【大凶】";
-            
             html += `<span class="section-title">【五行全盤剖析】</span>`;
             
             picks.forEach((p, idx) => {
@@ -610,11 +603,7 @@
             });
             
             html += `<div class="strategy-quote" style="margin-top:15px;">`;
-            
-            if(level === "【大吉】") html += "黃帝內經：「陽氣升騰，萬物生長。」氣勢如虹，可大舉進攻。";
-            else if(level === "【大凶】") html += "孫子兵法：「兵者，國之大事，死生之地。」局勢極險，切勿輕舉妄動。";
-            else html += "孫子兵法：「兵無常勢，水無常形。」局勢多變，需隨機應變。";           
-            html += `總評 ${total}。經云：「陰平陽秘，精神乃治。」五行相生相剋，需注意平衡。`;
+            html += `總分 ${total}。經云：「陰平陽秘，精神乃治。」五行相生相剋，需注意平衡。`;
             html += `</div>`;
         }
 
@@ -631,8 +620,3 @@
 </body>
 
 </html>
-
-
-
-
-
