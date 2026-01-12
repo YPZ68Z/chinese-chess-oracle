@@ -563,15 +563,15 @@
             const [cause, process, result] = picks;
             
             let level = "";
-            if(total >= 18) level = "【大吉】";
-            else if(total >= 8) level = "【吉】";
-            else if(total >= -8) level = "【平】";
-            else if(total >= -18) level = "【凶】";
+            if(total >= 15) level = "【大吉】";
+            else if(total > 5) level = "【吉】";
+            else if(total >= -5) level = "【平】";
+            else if(total >= -15) level = "【凶】";
             else level = "【大凶】";
 
             let trend = "";
-            if(cause.score < 0 && result.score > 8) trend = "倒吃甘蔗 (先苦後甘)";
-            else if(cause.score > 0 && result.score < -8) trend = "虎頭蛇尾 (始亂終棄)";
+            if(cause.score < 0 && result.score > 7) trend = "倒吃甘蔗 (先苦後甘)";
+            else if(cause.score > 0 && result.score < -7) trend = "虎頭蛇尾 (始亂終棄)";
             else if(cause.score > 0 && process.score > 0 && result.score > 0) trend = "平步青雲 (一路順風)";
             else if(cause.score < 0 && process.score < 0 && result.score < 0) trend = "每況愈下 (雪上加霜)";
             else trend = "波折起伏 (吉凶互見)";
@@ -618,4 +618,5 @@
 </script>
 
 </body>
+
 </html>
